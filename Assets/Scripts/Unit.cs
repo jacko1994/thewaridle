@@ -1,7 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Unit : GameEntity
 {
+    public static List<string> UnitAttackableTags = new List<string> { "Enemy" };
+
     protected override void Start()
     {
         base.Start();
@@ -10,6 +13,11 @@ public class Unit : GameEntity
         MovementSpeed = 5f;
         AttackSpeed = 1f;
         AttackRange = 10f;
+    }
+
+    protected override bool IsAttackable()
+    {
+        return UnitAttackableTags.Contains(tag);
     }
 
     void Update()
