@@ -38,8 +38,15 @@ public class Enemy : GameEntity
                 MoveTowards(target.transform.position);
             }
         }
+        else
+        {
+            SetIdle();
+        }
     }
-
+    private void SetIdle()
+    {
+        animatorController?.SetIdle();
+    }
     public override void TakeDamage(int amount)
     {
         base.TakeDamage(amount);

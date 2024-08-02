@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AnimatorController : MonoBehaviour
 {
@@ -95,7 +95,15 @@ public class AnimatorController : MonoBehaviour
             animator.SetTrigger("Shoot");
         }
     }
+    public void SetIdle()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("IsMove", false);
+            animator.SetTrigger("Idle");
 
+        }
+    }
     public void Die()
     {
         if (animator != null)
