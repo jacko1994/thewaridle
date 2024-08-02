@@ -7,12 +7,13 @@ public class Base : GameEntity
     protected override void Start()
     {
         base.Start();
+        IsMobile = false;
         MaxHealth = 1000;
         Health = MaxHealth;
-        AttackPower = 0; // Căn cứ không có khả năng tấn công
-        MovementSpeed = 0f; // Căn cứ không di chuyển
-        AttackSpeed = 0f; // Không áp dụng
-        AttackRange = 0f; // Không áp dụng
+        AttackPower = 0;
+        MovementSpeed = 0f;
+        AttackSpeed = 0f;
+        AttackRange = 0f;
     }
 
     public override void TakeDamage(int amount)

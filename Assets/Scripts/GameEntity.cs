@@ -7,7 +7,7 @@ public abstract class GameEntity : MonoBehaviour
     public float MovementSpeed { get; protected set; }
     public float AttackSpeed { get; protected set; }
     public float AttackRange { get; protected set; }
-
+    public bool IsMobile { get; protected set; } = true;
     private float lastAttackTime;
     protected AnimatorController animatorController;
     protected CharacterController characterController;
@@ -28,23 +28,12 @@ public abstract class GameEntity : MonoBehaviour
             Debug.LogWarning($"{gameObject.name} does not have a CharacterController component.");
         }
     }
-    void Update()
+
+    protected virtual void OnDrawGizmos()
     {
-        GameEntity nearestEnemy = FindNearestEnemy();
-        if (nearestEnemy != null)
-        {
-            float distance = Vector3.Distance(transform.position, nearestEnemy.transform.position);
-            float minDistance = 1.0f; // Khoảng cách tối thiểu giữa các đối tượng
-
-            if (distance < minDistance)
-            {
-                Vector3 direction = (transform.position - nearestEnemy.transform.position).normalized;
-                Vector3 newPosition = nearestEnemy.transform.position + direction * minDistance;
-                characterController.Move(newPosition - transform.position);
-            }
-        }
-
-        // Phần còn lại của code Update
+        Gizmos.color = Color.blue;
+        float separationRadius = 1.0f;
+        Gizmos.DrawWireSphere(transform.position, separationRadius);
     }
 
     public virtual void TakeDamage(int amount)
@@ -61,7 +50,7 @@ public abstract class GameEntity : MonoBehaviour
     {
         if (CanAttack(target))
         {
-            LookAtTarget(target); // Thực thể nhìn về phía đối thủ trước khi tấn công
+            LookAtTarget(target);
             target.TakeDamage(AttackPower);
             lastAttackTime = Time.time;
             animatorController?.Shoot();
@@ -74,6 +63,12 @@ public abstract class GameEntity : MonoBehaviour
         Destroy(gameObject);
     }
 
+    protected virtual void Update()
+    {
+        HandleSeparationFromSameTagEntities();
+        PerformActions();
+    }
+
     protected abstract bool IsAttackable();
 
     protected bool CanAttack(GameEntity target)
@@ -81,10 +76,40 @@ public abstract class GameEntity : MonoBehaviour
         return target != null && target.IsAttackable() && Time.time - lastAttackTime > 1f / AttackSpeed;
     }
 
+    protected virtual void HandleSeparationFromSameTagEntities()
+    {
+        if (!IsMobile) return;
+
+        float separationRadius = 1.0f;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, separationRadius);
+
+        Debug.Log($"Checking for collisions within radius: {separationRadius} from position: {transform.position}");
+
+        foreach (var hitCollider in hitColliders)
+        {
+            GameObject obj = hitCollider.gameObject;
+            if (obj == gameObject || obj.tag != gameObject.tag) continue;
+
+            Debug.Log($"Potential collision detected with object: {obj.name}, tag: {obj.tag}");
+
+            float distance = Vector3.Distance(transform.position, obj.transform.position);
+            Debug.Log($"Distance to {obj.name}: {distance}");
+
+            if (distance < separationRadius)
+            {
+                Vector3 direction = (transform.position - obj.transform.position).normalized;
+                Vector3 newPosition = transform.position + direction * (separationRadius - distance);
+                characterController.Move(newPosition - transform.position);
+
+                Debug.Log($"Moved {gameObject.name} away from {obj.name} by {separationRadius - distance} units.");
+            }
+        }
+    }
+
     protected GameEntity FindNearestEnemy()
     {
         GameObject[] potentialTargets = FindObjectsOfType<GameObject>();
-        GameObject nearestEnemy = null;
+        GameEntity nearestEnemy = null;
         float nearestDistance = Mathf.Infinity;
 
         foreach (GameObject obj in potentialTargets)
@@ -96,7 +121,7 @@ public abstract class GameEntity : MonoBehaviour
                 if (distance < nearestDistance)
                 {
                     nearestDistance = distance;
-                    nearestEnemy = obj;
+                    nearestEnemy = entity;
                 }
             }
         }
@@ -106,14 +131,13 @@ public abstract class GameEntity : MonoBehaviour
 
     protected void MoveTowards(Vector3 targetPosition)
     {
-        if (characterController == null)
-            return;
+        if (characterController == null) return;
 
         Vector3 direction = (targetPosition - transform.position).normalized;
         float distance = Vector3.Distance(transform.position, targetPosition);
-        float stoppingDistance = 2f; // Khoảng cách mà đối tượng sẽ dừng lại
+        float stoppingDistance = 2f;
 
-        LookAtTarget(targetPosition); // Nhìn về phía mục tiêu trong khi di chuyển
+        LookAtTarget(targetPosition);
 
         if (distance > stoppingDistance)
         {
@@ -130,7 +154,7 @@ public abstract class GameEntity : MonoBehaviour
     protected void LookAtTarget(Vector3 targetPosition)
     {
         Vector3 direction = (targetPosition - transform.position).normalized;
-        direction.y = 0; // Đảm bảo không thay đổi góc nhìn dọc theo trục Y
+        direction.y = 0;
         transform.forward = direction;
     }
 
@@ -138,5 +162,13 @@ public abstract class GameEntity : MonoBehaviour
     {
         if (target == null) return;
         LookAtTarget(target.transform.position);
+    }
+
+    protected virtual void PerformActions()
+    {
+        // Phương thức ảo để thực hiện các hành động cụ thể, chỉ thực hiện nếu IsMobile là true
+        if (!IsMobile) return;
+
+        // Các hành động cụ thể như tấn công, di chuyển, v.v. sẽ được thực hiện trong lớp kế thừa
     }
 }

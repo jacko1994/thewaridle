@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Enemy : GameEntity
 {
     public static List<string> EnemyAttackableTags = new List<string> { "Unit", "Base" };
-    private GameEntity lastAttacker; // Lưu trữ đối tượng tấn công cuối cùng
+    private GameEntity lastAttacker;
 
     protected override void Start()
     {
@@ -13,7 +13,7 @@ public class Enemy : GameEntity
         AttackPower = 5;
         MovementSpeed = 3f;
         AttackSpeed = 0.5f;
-        AttackRange = 5f;
+        AttackRange = 10f;
     }
 
     protected override bool IsAttackable()
@@ -21,8 +21,9 @@ public class Enemy : GameEntity
         return EnemyAttackableTags.Contains(tag);
     }
 
-    void Update()
+    protected override void PerformActions()
     {
+        base.PerformActions();
         GameEntity target = lastAttacker != null && CanAttack(lastAttacker) ? lastAttacker : FindNearestEnemy();
 
         if (target != null)
@@ -44,7 +45,7 @@ public class Enemy : GameEntity
         base.TakeDamage(amount);
         if (lastAttacker == null || !CanAttack(lastAttacker))
         {
-            lastAttacker = FindNearestAttacker(); // Gán lại đối tượng tấn công cuối cùng
+            lastAttacker = FindNearestAttacker();
         }
     }
 
