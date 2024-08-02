@@ -11,6 +11,7 @@ public abstract class GameEntity : MonoBehaviour
     private float lastAttackTime;
     protected AnimatorController animatorController;
     protected CharacterController characterController;
+    protected CharacterFeedbackManager feedbackManager;
 
     protected virtual void Start()
     {
@@ -26,6 +27,12 @@ public abstract class GameEntity : MonoBehaviour
         if (characterController == null)
         {
             Debug.LogWarning($"{gameObject.name} does not have a CharacterController component.");
+        }
+        feedbackManager = GetComponent<CharacterFeedbackManager>();
+
+        if (feedbackManager == null)
+        {
+            Debug.LogWarning($"{gameObject.name} does not have a CharacterFeedbackManager component.");
         }
     }
 
@@ -54,6 +61,7 @@ public abstract class GameEntity : MonoBehaviour
             target.TakeDamage(AttackPower);
             lastAttackTime = Time.time;
             animatorController?.Shoot();
+            feedbackManager?.PlayAttackFeedback();
         }
     }
 
