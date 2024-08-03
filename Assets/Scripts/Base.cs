@@ -8,7 +8,7 @@ public class Base : GameEntity
     {
         base.Start();
         IsMobile = false;
-        MaxHealth = 1000;
+        MaxHealth = 100;
         Health = MaxHealth;
         AttackPower = 0;
         MovementSpeed = 0f;

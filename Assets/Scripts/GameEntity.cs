@@ -79,7 +79,7 @@ public abstract class GameEntity : MonoBehaviour
 
     protected abstract bool IsAttackable();
 
-    protected bool CanAttack(GameEntity target)
+    protected virtual bool CanAttack(GameEntity target)
     {
         return target != null && target.IsAttackable() && Time.time - lastAttackTime > 1f / AttackSpeed;
     }
@@ -91,30 +91,25 @@ public abstract class GameEntity : MonoBehaviour
         float separationRadius = 1.0f;
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, separationRadius);
 
-        Debug.Log($"Checking for collisions within radius: {separationRadius} from position: {transform.position}");
-
         foreach (var hitCollider in hitColliders)
         {
             GameObject obj = hitCollider.gameObject;
             if (obj == gameObject || obj.tag != gameObject.tag) continue;
 
-            Debug.Log($"Potential collision detected with object: {obj.name}, tag: {obj.tag}");
+         
 
             float distance = Vector3.Distance(transform.position, obj.transform.position);
-            Debug.Log($"Distance to {obj.name}: {distance}");
 
             if (distance < separationRadius)
             {
                 Vector3 direction = (transform.position - obj.transform.position).normalized;
                 Vector3 newPosition = transform.position + direction * (separationRadius - distance);
                 characterController.Move(newPosition - transform.position);
-
-                Debug.Log($"Moved {gameObject.name} away from {obj.name} by {separationRadius - distance} units.");
             }
         }
     }
 
-    protected GameEntity FindNearestEnemy()
+    protected virtual GameEntity FindNearestEnemy()
     {
         GameObject[] potentialTargets = FindObjectsOfType<GameObject>();
         GameEntity nearestEnemy = null;
@@ -174,9 +169,6 @@ public abstract class GameEntity : MonoBehaviour
 
     protected virtual void PerformActions()
     {
-        // Phương thức ảo để thực hiện các hành động cụ thể, chỉ thực hiện nếu IsMobile là true
         if (!IsMobile) return;
-
-        // Các hành động cụ thể như tấn công, di chuyển, v.v. sẽ được thực hiện trong lớp kế thừa
     }
 }
