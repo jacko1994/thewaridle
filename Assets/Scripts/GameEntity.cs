@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public abstract class GameEntity : MonoBehaviour
 {
-    public int Health { get; protected set; }
-    public int AttackPower { get; protected set; }
+    public int Health { get; set; }
+    public int AttackPower { get; set; }
     public float MovementSpeed { get; protected set; }
     public float AttackSpeed { get; protected set; }
     public float AttackRange { get; protected set; }

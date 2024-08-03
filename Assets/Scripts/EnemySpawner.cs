@@ -6,8 +6,8 @@ public class EnemySpawner : MonoBehaviour
     public List<Transform> spawnPoints;
     public ObjectPool objectPool;
     public int maxEnemies = 20;
-    public float spawnDelay = 2f; 
-    private float spawnTimer = 0f; 
+    public float spawnDelay = 2f;
+    private float spawnTimer = 0f;
     private int currentEnemyCount = 0;
     private int lastSpawnPointIndex = -1;
 
@@ -34,11 +34,11 @@ public class EnemySpawner : MonoBehaviour
     void SpawnEnemy()
     {
         Transform spawnPoint = GetUniqueSpawnPoint();
-        GameObject enemy = objectPool.GetPooledObject();
+        GameObject enemy = objectPool.GetPooledObject(); // Lấy đối tượng từ object pool
         if (enemy != null)
         {
             enemy.transform.position = spawnPoint.position;
-            enemy.SetActive(true);
+            enemy.SetActive(true); // Kích hoạt đối tượng
             currentEnemyCount++;
         }
     }
@@ -57,7 +57,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void OnEnemyDeath(GameObject enemy)
     {
-        objectPool.ReturnToPool(enemy);
+        objectPool.ReturnToPool(enemy); // Trả đối tượng về object pool
         currentEnemyCount--;
     }
 }
