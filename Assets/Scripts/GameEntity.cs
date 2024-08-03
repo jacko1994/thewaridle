@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
 
 public abstract class GameEntity : MonoBehaviour
 {
@@ -20,6 +20,7 @@ public abstract class GameEntity : MonoBehaviour
 
     // Thuộc tính chứa các tag có thể bị tấn công
     public List<string> AttackableTags { get; protected set; }
+    private float separationRadius = 2f;
 
     protected virtual void Start()
     {
@@ -29,6 +30,7 @@ public abstract class GameEntity : MonoBehaviour
         DamageBehavior = new StandardDamage(this, animatorController);
         AttackBehavior = new StandardAttack(this, animatorController, feedbackManager);
         MoveBehavior = new StandardMove(this, characterController, animatorController);
+
     }
 
     protected virtual void Update()
@@ -69,10 +71,11 @@ public abstract class GameEntity : MonoBehaviour
 
     protected virtual void HandleSeparationFromSameTagEntities()
     {
-        if (!IsMobile) return;
+        if (!IsMobile || characterController == null) return;
 
-        float separationRadius = 1.0f;
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, separationRadius);
+
+        ConsoleProDebug.Watch("Separation Check", $"Checking entities within radius {separationRadius}");
 
         foreach (var hitCollider in hitColliders)
         {
@@ -81,14 +84,31 @@ public abstract class GameEntity : MonoBehaviour
 
             float distance = Vector3.Distance(transform.position, obj.transform.position);
 
+            ConsoleProDebug.Watch("Detected Entity", obj.name);
+            ConsoleProDebug.Watch("Distance to Entity", distance.ToString());
+
             if (distance < separationRadius)
             {
+                Vector3 currentPosition = transform.position;
                 Vector3 direction = (transform.position - obj.transform.position).normalized;
                 Vector3 newPosition = transform.position + direction * (separationRadius - distance);
+
+                ConsoleProDebug.Watch("Current Position", currentPosition.ToString());
+
+                ConsoleProDebug.Watch("Moving Entity", $"Moving {gameObject.name} away from {obj.name}");
+                ConsoleProDebug.Watch("Separation Distance", (separationRadius - distance).ToString());
+
                 characterController.Move(newPosition - transform.position);
+
+                // Kiểm tra lại vị trí sau khi di chuyển
+                ConsoleProDebug.Watch("New Position", transform.position.ToString());
             }
         }
     }
+
+
+
+
 
     public void LookAtTarget(Vector3 targetPosition)
     {
@@ -126,4 +146,10 @@ public abstract class GameEntity : MonoBehaviour
         return nearestEnemy;
     }
 
+    protected virtual void OnDrawGizmos()
+    {
+
+        Gizmos.color = Color.blue; 
+        Gizmos.DrawWireSphere(transform.position, separationRadius);
+    }
 }
