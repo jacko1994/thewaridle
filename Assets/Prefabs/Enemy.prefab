@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6517159016492559968}
   - component: {fileID: 4880870655513385707}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ShootFeedbacks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -698,6 +698,14 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 4880870655513385707}
         DebugActive: 0
+        Preset: 4
+        HapticSettings:
+          ForceGamepadID: 0
+          GamepadID: 0
+          OnlyPlayIfHapticsSupported: 1
+          OnlyPlayIfAdvancedRequirementsMet: 0
+          OnlyPlayIfAmplitudeModulationSupported: 0
+          OnlyPlayIfFrequencyModulationSupported: 0
     - rid: 6398661856603668480
       type: {class: MMF_Animation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
@@ -804,7 +812,7 @@ GameObject:
   - component: {fileID: 8261125939504746070}
   - component: {fileID: 4021219487498473472}
   - component: {fileID: 6131427142212976842}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Smoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5829,7 +5837,7 @@ GameObject:
   - component: {fileID: 1380194661279531650}
   - component: {fileID: 2936723534157441787}
   - component: {fileID: 1731935223766737273}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Muzzleflash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10745,7 +10753,7 @@ GameObject:
   - component: {fileID: 108680657801200209}
   - component: {fileID: 2379865941384211678}
   - component: {fileID: 6931346907826610644}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SideParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15704,7 +15712,7 @@ GameObject:
   - component: {fileID: 8601853823355968065}
   - component: {fileID: 6046054278554530740}
   - component: {fileID: 3840783563701671287}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ForwardParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20555,7 +20563,7 @@ GameObject:
   - component: {fileID: 8841248933808537759}
   - component: {fileID: 6075309895978516764}
   - component: {fileID: 1406461465504762583}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Shells
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25465,7 +25473,7 @@ GameObject:
   - component: {fileID: 7172882546673820487}
   - component: {fileID: 1242149891420214735}
   - component: {fileID: 126116513680885929}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30363,7 +30371,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1458368543383073620}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Plane Transform 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30395,7 +30403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8246893449761163581}
   - component: {fileID: 4085517225048719871}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30490,7 +30498,7 @@ GameObject:
   - component: {fileID: 8062536094911966025}
   - component: {fileID: 1772473081678775454}
   - component: {fileID: 574814437716451706}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: HitscanShot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35456,10 +35464,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: -7049003615419880366, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 3091267935072128276, guid: e1ea3649919bb1247ae1db94032ccb03, type: 3}
     - target: {fileID: -6870773096346018603, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -35558,7 +35562,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       propertyPath: m_Name
-      value: Soldier 2 Red 1
+      value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       propertyPath: m_Layer
@@ -35566,7 +35570,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       propertyPath: m_TagString
-      value: Unit
+      value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 1246401006879348256, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       propertyPath: m_Layer
@@ -35584,10 +35588,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 2038276068605029806, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 6603406379047295906, guid: e7b5d6155b7adac4cb1079faa6ebdbe6, type: 3}
     - target: {fileID: 2122272359771002436, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -35644,10 +35644,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 8110619811060189577, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: -4399875564820509310, guid: fe898bca62e53014e8fc5fd458557b57, type: 3}
     - target: {fileID: 8137629052182222002, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -35679,6 +35675,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 717456101902296642}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1826027061596941748}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       insertIndex: -1
@@ -35686,9 +35685,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2580613834245319990}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1326745833382265860}
   m_SourcePrefab: {fileID: 100100000, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
 --- !u!4 &1614098436598293882 stripped
 Transform:
@@ -35700,6 +35696,18 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
   m_PrefabInstance: {fileID: 1291640859087405713}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &717456101902296642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102544775755612096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e5a1af61c1e75147898d6f3a3c48978, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1826027061596941748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35753,18 +35761,6 @@ MonoBehaviour:
   attackFeedback: {fileID: 4880870655513385707}
   takeDamageFeedback: {fileID: 0}
   dieFeedback: {fileID: 0}
---- !u!114 &1326745833382265860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2102544775755612096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab60bbe87487adf409e146ceb50205f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &3553760698500848116 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2359228706547440485, guid: 6637a0a87372b3747b4be255b984ac95, type: 3}
@@ -35826,6 +35822,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 83a18396b955a9c4cbd529b4840a0a4e, type: 3}
       propertyPath: m_Name
       value: Rifle
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 83a18396b955a9c4cbd529b4840a0a4e, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

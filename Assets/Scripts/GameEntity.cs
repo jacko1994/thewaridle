@@ -8,67 +8,24 @@ public abstract class GameEntity : MonoBehaviour
     public float AttackSpeed { get; protected set; }
     public float AttackRange { get; protected set; }
     public bool IsMobile { get; protected set; } = true;
-    private float lastAttackTime;
+
     protected AnimatorController animatorController;
     protected CharacterController characterController;
     protected CharacterFeedbackManager feedbackManager;
 
+    public IDamageable DamageBehavior { get; set; }
+    public IAttackable AttackBehavior { get; set; }
+    public IMovable MoveBehavior { get; set; }
+
     protected virtual void Start()
     {
-        lastAttackTime = Time.time;
         animatorController = GetComponent<AnimatorController>();
         characterController = GetComponent<CharacterController>();
-
-        if (animatorController == null)
-        {
-            Debug.LogWarning($"{gameObject.name} does not have an AnimatorController component.");
-        }
-
-        if (characterController == null)
-        {
-            Debug.LogWarning($"{gameObject.name} does not have a CharacterController component.");
-        }
         feedbackManager = GetComponent<CharacterFeedbackManager>();
 
-        if (feedbackManager == null)
-        {
-            Debug.LogWarning($"{gameObject.name} does not have a CharacterFeedbackManager component.");
-        }
-    }
-
-    protected virtual void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        float separationRadius = 1.0f;
-        Gizmos.DrawWireSphere(transform.position, separationRadius);
-    }
-
-    public virtual void TakeDamage(int amount)
-    {
-        Health -= amount;
-        animatorController?.TakeDamage();
-        if (Health <= 0)
-        {
-            Die();
-        }
-    }
-
-    public virtual void Attack(GameEntity target)
-    {
-        if (CanAttack(target))
-        {
-            LookAtTarget(target);
-            target.TakeDamage(AttackPower);
-            lastAttackTime = Time.time;
-            animatorController?.Shoot();
-            feedbackManager?.PlayAttackFeedback();
-        }
-    }
-
-    protected virtual void Die()
-    {
-        animatorController?.Die();
-        Destroy(gameObject);
+        DamageBehavior = new StandardDamage(this, animatorController);
+        AttackBehavior = new StandardAttack(this, animatorController);
+        MoveBehavior = new StandardMove(this, characterController, animatorController);
     }
 
     protected virtual void Update()
@@ -77,11 +34,34 @@ public abstract class GameEntity : MonoBehaviour
         PerformActions();
     }
 
-    protected abstract bool IsAttackable();
-
-    protected virtual bool CanAttack(GameEntity target)
+    public virtual void TakeDamage(int amount)
     {
-        return target != null && target.IsAttackable() && Time.time - lastAttackTime > 1f / AttackSpeed;
+        DamageBehavior?.TakeDamage(amount);
+    }
+
+    public virtual void Attack(GameEntity target)
+    {
+        AttackBehavior?.Attack(target);
+    }
+
+    public virtual void ModifyHealth(int amount)
+    {
+        Health = Mathf.Max(Health + amount, 0);
+        if (Health <= 0)
+        {
+            Die();
+        }
+    }
+
+    protected virtual void Die()
+    {
+        Destroy(gameObject);
+        Debug.Log($"{gameObject.name} has died.");
+    }
+
+    protected virtual void PerformActions()
+    {
+        if (!IsMobile) return;
     }
 
     protected virtual void HandleSeparationFromSameTagEntities()
@@ -96,8 +76,6 @@ public abstract class GameEntity : MonoBehaviour
             GameObject obj = hitCollider.gameObject;
             if (obj == gameObject || obj.tag != gameObject.tag) continue;
 
-         
-
             float distance = Vector3.Distance(transform.position, obj.transform.position);
 
             if (distance < separationRadius)
@@ -109,6 +87,20 @@ public abstract class GameEntity : MonoBehaviour
         }
     }
 
+    public void LookAtTarget(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        direction.y = 0;
+        transform.forward = direction;
+    }
+
+
+    protected void LookAtTarget(GameEntity target)
+    {
+        if (target == null) return;
+        LookAtTarget(target.transform.position);
+    }
+
     protected virtual GameEntity FindNearestEnemy()
     {
         GameObject[] potentialTargets = FindObjectsOfType<GameObject>();
@@ -118,7 +110,7 @@ public abstract class GameEntity : MonoBehaviour
         foreach (GameObject obj in potentialTargets)
         {
             GameEntity entity = obj.GetComponent<GameEntity>();
-            if (entity != null && CanAttack(entity))
+            if (entity != null && AttackBehavior.CanAttack(entity))
             {
                 float distance = Vector3.Distance(transform.position, obj.transform.position);
                 if (distance < nearestDistance)
@@ -129,46 +121,8 @@ public abstract class GameEntity : MonoBehaviour
             }
         }
 
-        return nearestEnemy != null ? nearestEnemy.GetComponent<GameEntity>() : null;
+        return nearestEnemy;
     }
 
-    protected void MoveTowards(Vector3 targetPosition)
-    {
-        if (characterController == null) return;
-
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        float distance = Vector3.Distance(transform.position, targetPosition);
-        float stoppingDistance = 2f;
-
-        LookAtTarget(targetPosition);
-
-        if (distance > stoppingDistance)
-        {
-            Vector3 move = direction * MovementSpeed * Time.deltaTime;
-            characterController.Move(move);
-            animatorController?.Move(true);
-        }
-        else
-        {
-            animatorController?.Move(false);
-        }
-    }
-
-    protected void LookAtTarget(Vector3 targetPosition)
-    {
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        direction.y = 0;
-        transform.forward = direction;
-    }
-
-    protected void LookAtTarget(GameEntity target)
-    {
-        if (target == null) return;
-        LookAtTarget(target.transform.position);
-    }
-
-    protected virtual void PerformActions()
-    {
-        if (!IsMobile) return;
-    }
+    public abstract bool IsAttackable();
 }

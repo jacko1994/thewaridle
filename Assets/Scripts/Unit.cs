@@ -13,12 +13,14 @@ public class Unit : GameEntity
         MovementSpeed = 5f;
         AttackSpeed = 1f;
         AttackRange = 10f;
-        IsMobile = false;
-        lastAttackTime = Time.time;
+        IsMobile = true;
 
+        DamageBehavior = new StandardDamage(this, animatorController);
+        AttackBehavior = new StandardAttack(this, animatorController);
+        MoveBehavior = new StandardMove(this, characterController, animatorController);
     }
 
-    protected override bool IsAttackable()
+    public override bool IsAttackable()
     {
         return UnitAttackableTags.Contains(tag);
     }
@@ -33,44 +35,42 @@ public class Unit : GameEntity
             float distance = Vector3.Distance(transform.position, nearestEnemy.transform.position);
             if (distance <= AttackRange)
             {
-                Debug.Log("Unit Attack");
                 Attack(nearestEnemy);
             }
             else
             {
-                MoveTowards(nearestEnemy.transform.position);
+                MoveBehavior?.MoveTowards(nearestEnemy.transform.position);
             }
         }
+        else
+        {
+            SetIdle();
+        }
     }
+
     protected override GameEntity FindNearestEnemy()
     {
-        GameObject[] potentialTargets = FindObjectsOfType<GameObject>();
+        GameEntity[] potentialTargets = FindObjectsOfType<GameEntity>();
         GameEntity nearestEnemy = null;
         float nearestDistance = Mathf.Infinity;
 
-        foreach (GameObject obj in potentialTargets)
+        foreach (GameEntity entity in potentialTargets)
         {
-            // Chỉ kiểm tra những đối tượng có tag "Enemy"
-            if (obj.tag != "Enemy") continue;
+            if (!UnitAttackableTags.Contains(entity.tag)) continue;
 
-            GameEntity entity = obj.GetComponent<GameEntity>();
-            if (entity != null)
+            float distance = Vector3.Distance(transform.position, entity.transform.position);
+            if (distance < nearestDistance)
             {
-                float distance = Vector3.Distance(transform.position, obj.transform.position);
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearestEnemy = entity;
-                }
+                nearestDistance = distance;
+                nearestEnemy = entity;
             }
         }
 
         return nearestEnemy;
     }
-    private float lastAttackTime;
 
-    protected override bool CanAttack(GameEntity target)
+    private void SetIdle()
     {
-        return target != null && Time.time - lastAttackTime > 1f / AttackSpeed;
+        animatorController?.SetIdle();
     }
 }

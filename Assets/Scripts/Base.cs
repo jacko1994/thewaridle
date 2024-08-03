@@ -14,6 +14,8 @@ public class Base : GameEntity
         MovementSpeed = 0f;
         AttackSpeed = 0f;
         AttackRange = 0f;
+
+        DamageBehavior = new StandardDamage(this, animatorController);
     }
 
     public override void TakeDamage(int amount)
@@ -21,7 +23,7 @@ public class Base : GameEntity
         base.TakeDamage(amount);
         if (Health <= 0)
         {
-            Die(); // Gọi phương thức Die khi máu về 0
+            Die();
         }
     }
 
@@ -34,16 +36,14 @@ public class Base : GameEntity
         }
     }
 
-    protected override bool IsAttackable()
+    public override bool IsAttackable()
     {
-        // Căn cứ luôn có thể bị tấn công
+        Debug.Log("Base Is Attackable");
         return true;
     }
 
-    protected override void Die()
+    protected void Die()
     {
-        base.Die();
         Debug.Log("Base destroyed!");
-        // Thêm logic cần thiết khi căn cứ bị phá hủy
     }
 }
