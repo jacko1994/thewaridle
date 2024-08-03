@@ -17,7 +17,6 @@ public class Unit : GameEntity
         IsMobile = true;
         AttackableTags = DefaultUnitAttackableTags;
         navMeshAgent.speed = MovementSpeed;
-        navMeshAgent.speed = MovementSpeed;
 
     }
     protected override void PerformActions()
