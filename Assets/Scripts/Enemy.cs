@@ -17,6 +17,8 @@ public class Enemy : GameEntity
         AttackRange = 10f;
         IsMobile = true;
         AttackableTags = DefaultEnemyAttackableTags;
+        navMeshAgent.speed = MovementSpeed;
+        navMeshAgent.stoppingDistance = AttackRange;
 
     }
 

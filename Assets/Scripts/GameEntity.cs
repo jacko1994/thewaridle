@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.AI;
 
 public abstract class GameEntity : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public abstract class GameEntity : MonoBehaviour
     protected AnimatorController animatorController;
     protected CharacterController characterController;
     protected CharacterFeedbackManager feedbackManager;
+    protected NavMeshAgent navMeshAgent; // Thay thế CharacterController bằng NavMeshAgent
 
     public IDamageable DamageBehavior { get; set; }
     public IAttackable AttackBehavior { get; set; }
@@ -20,22 +22,24 @@ public abstract class GameEntity : MonoBehaviour
 
     // Thuộc tính chứa các tag có thể bị tấn công
     public List<string> AttackableTags { get; protected set; }
-    private float separationRadius = 2f;
+    private float separationRadius = 1f;
 
     protected virtual void Start()
     {
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.speed = MovementSpeed;
         animatorController = GetComponent<AnimatorController>();
         characterController = GetComponent<CharacterController>();
         feedbackManager = GetComponent<CharacterFeedbackManager>();
         DamageBehavior = new StandardDamage(this, animatorController);
         AttackBehavior = new StandardAttack(this, animatorController, feedbackManager);
-        MoveBehavior = new StandardMove(this, characterController, animatorController);
+        MoveBehavior = new StandardMove(this, navMeshAgent, animatorController);
 
     }
 
     protected virtual void Update()
     {
-        HandleSeparationFromSameTagEntities();
+        //HandleSeparationFromSameTagEntities();
         PerformActions();
     }
 
@@ -71,7 +75,7 @@ public abstract class GameEntity : MonoBehaviour
 
     protected virtual void HandleSeparationFromSameTagEntities()
     {
-        if (!IsMobile || characterController == null) return;
+        if (!IsMobile || navMeshAgent == null) return;
 
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, separationRadius);
 
@@ -98,9 +102,8 @@ public abstract class GameEntity : MonoBehaviour
                 ConsoleProDebug.Watch("Moving Entity", $"Moving {gameObject.name} away from {obj.name}");
                 ConsoleProDebug.Watch("Separation Distance", (separationRadius - distance).ToString());
 
-                characterController.Move(newPosition - transform.position);
+                navMeshAgent.SetDestination(newPosition);
 
-                // Kiểm tra lại vị trí sau khi di chuyển
                 ConsoleProDebug.Watch("New Position", transform.position.ToString());
             }
         }

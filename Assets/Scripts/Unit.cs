@@ -16,6 +16,8 @@ public class Unit : GameEntity
         AttackRange = 5f;
         IsMobile = true;
         AttackableTags = DefaultUnitAttackableTags;
+        navMeshAgent.speed = MovementSpeed;
+        navMeshAgent.speed = MovementSpeed;
 
     }
     protected override void PerformActions()

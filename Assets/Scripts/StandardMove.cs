@@ -1,32 +1,32 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class StandardMove : IMovable
 {
     private readonly GameEntity gameEntity;
     private readonly CharacterController characterController;
     private readonly AnimatorController animatorController;
-
-    public StandardMove(GameEntity gameEntity, CharacterController characterController, AnimatorController animatorController)
+    private readonly NavMeshAgent navMeshAgent;
+    public StandardMove(GameEntity gameEntity, NavMeshAgent navMeshAgent, AnimatorController animatorController)
     {
         this.gameEntity = gameEntity;
-        this.characterController = characterController;
+        this.navMeshAgent = navMeshAgent;
         this.animatorController = animatorController;
     }
 
+
     public void MoveTowards(Vector3 targetPosition)
     {
-        if (characterController == null) return;
+        if (navMeshAgent == null) return;
 
-        Vector3 direction = (targetPosition - gameEntity.transform.position).normalized;
-        float distance = Vector3.Distance(gameEntity.transform.position, targetPosition);
         float stoppingDistance = 2f;
 
-        gameEntity.LookAtTarget(targetPosition);
+        //gameEntity.LookAtTarget(targetPosition);
 
-        if (distance > stoppingDistance)
+        navMeshAgent.SetDestination(targetPosition);
+
+        if (navMeshAgent.remainingDistance > stoppingDistance)
         {
-            Vector3 move = direction * gameEntity.MovementSpeed * Time.deltaTime;
-            characterController.Move(move);
             animatorController?.Move(true);
         }
         else
