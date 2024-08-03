@@ -8,7 +8,7 @@ public class Base : GameEntity
     {
         base.Start();
         IsMobile = false;
-        MaxHealth = 100;
+        MaxHealth = 1000;
         Health = MaxHealth;
         AttackPower = 0;
         MovementSpeed = 0f;
@@ -36,14 +36,10 @@ public class Base : GameEntity
         }
     }
 
-    public override bool IsAttackable()
+    protected override void Die()
     {
-        Debug.Log("Base Is Attackable");
-        return true;
-    }
+        Debug.Log("Base Is Destroyed");
 
-    protected void Die()
-    {
-        Debug.Log("Base destroyed!");
+        base.Die();
     }
 }

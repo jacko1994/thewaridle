@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class GameEntity : MonoBehaviour
 {
@@ -17,14 +18,16 @@ public abstract class GameEntity : MonoBehaviour
     public IAttackable AttackBehavior { get; set; }
     public IMovable MoveBehavior { get; set; }
 
+    // Thuộc tính chứa các tag có thể bị tấn công
+    public List<string> AttackableTags { get; protected set; }
+
     protected virtual void Start()
     {
         animatorController = GetComponent<AnimatorController>();
         characterController = GetComponent<CharacterController>();
         feedbackManager = GetComponent<CharacterFeedbackManager>();
-
         DamageBehavior = new StandardDamage(this, animatorController);
-        AttackBehavior = new StandardAttack(this, animatorController);
+        AttackBehavior = new StandardAttack(this, animatorController, feedbackManager);
         MoveBehavior = new StandardMove(this, characterController, animatorController);
     }
 
@@ -94,7 +97,6 @@ public abstract class GameEntity : MonoBehaviour
         transform.forward = direction;
     }
 
-
     protected void LookAtTarget(GameEntity target)
     {
         if (target == null) return;
@@ -124,5 +126,4 @@ public abstract class GameEntity : MonoBehaviour
         return nearestEnemy;
     }
 
-    public abstract bool IsAttackable();
 }

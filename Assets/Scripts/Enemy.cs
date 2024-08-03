@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class Enemy : GameEntity
 {
-    public static List<string> EnemyAttackableTags = new List<string> { "Unit", "Base" };
-    private GameEntity lastAttacker;
+    public static List<string> DefaultEnemyAttackableTags = new List<string> { "Unit", "Base" };
+
 
     protected override void Start()
     {
@@ -15,75 +15,33 @@ public class Enemy : GameEntity
         MovementSpeed = 3f;
         AttackSpeed = 0.5f;
         AttackRange = 10f;
+        IsMobile = true;
+        AttackableTags = DefaultEnemyAttackableTags;
 
-        DamageBehavior = new StandardDamage(this, animatorController);
-        AttackBehavior = new StandardAttack(this, animatorController);
-        MoveBehavior = new StandardMove(this, characterController, animatorController);
     }
 
-    public override bool IsAttackable()
-    {
-        return EnemyAttackableTags.Contains(tag);
-    }
 
     protected override void PerformActions()
     {
         base.PerformActions();
 
-        GameEntity target = lastAttacker != null && AttackBehavior.CanAttack(lastAttacker) ? lastAttacker : FindNearestEnemy();
+        // Chỉ tìm và tấn công kẻ thù gần nhất
+        GameEntity target = FindNearestEnemy();
 
         if (target != null)
         {
             float distance = Vector3.Distance(transform.position, target.transform.position);
+
             if (distance <= AttackRange)
             {
+                ConsoleProDebug.Watch("Enemy attack", distance.ToString());
                 Attack(target);
             }
-            else
+            else if (IsMobile)
             {
                 MoveBehavior?.MoveTowards(target.transform.position);
             }
         }
-        else
-        {
-            SetIdle();
-        }
-    }
-
-    private void SetIdle()
-    {
-        animatorController?.SetIdle();
-    }
-
-    public override void TakeDamage(int amount)
-    {
-        base.TakeDamage(amount);
-        if (lastAttacker == null || !AttackBehavior.CanAttack(lastAttacker))
-        {
-            lastAttacker = FindNearestAttacker();
-        }
-    }
-
-    private GameEntity FindNearestAttacker()
-    {
-        GameEntity[] entities = FindObjectsOfType<GameEntity>();
-        GameEntity nearestAttacker = null;
-        float nearestDistance = Mathf.Infinity;
-
-        foreach (GameEntity entity in entities)
-        {
-            if (EnemyAttackableTags.Contains(entity.tag))
-            {
-                float distance = Vector3.Distance(transform.position, entity.transform.position);
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearestAttacker = entity;
-                }
-            }
-        }
-
-        return nearestAttacker;
     }
 
     protected override GameEntity FindNearestEnemy()
@@ -94,9 +52,10 @@ public class Enemy : GameEntity
 
         foreach (GameEntity entity in entities)
         {
-            if (EnemyAttackableTags.Contains(entity.tag))
+            if (DefaultEnemyAttackableTags.Contains(entity.tag))
             {
                 float distance = Vector3.Distance(transform.position, entity.transform.position);
+
                 if (distance < nearestDistance)
                 {
                     nearestDistance = distance;
