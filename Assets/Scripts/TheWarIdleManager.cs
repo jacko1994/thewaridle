@@ -28,7 +28,7 @@ public class TheWarIdleManager : MonoBehaviour
             if (enemy != null)
             {
                 enemy.SetActive(true);
-                Enemy enemyComponent = enemy.GetComponent<Enemy>();
+                Character enemyComponent = enemy.GetComponent<Character>();
                 if (enemyComponent != null)
                 {
                     enemyComponent.Health = config.enemyHP;

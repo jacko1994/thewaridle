@@ -22,7 +22,6 @@ public class StandardAttack : IAttackable
             gameEntity.LookAtTarget(target.transform.position);
             target.TakeDamage(gameEntity.AttackPower);
             lastAttackTime = Time.time;
-            ConsoleProDebug.Watch("Attack Haha", target.name.ToString());
             //animatorController?.Shoot();
             characterFeedbackManager.PlayAttackFeedback();
         }
@@ -41,14 +40,6 @@ public class StandardAttack : IAttackable
 
         // Điều kiện cuối cùng để có thể tấn công
         bool canAttack = target != null && isTargetTagAttackable && isCooldownOver;
-
-        // Debug
-        ConsoleProDebug.Watch("Target Is Not Null", (target != null).ToString());
-        ConsoleProDebug.Watch("Target Tag", targetTag ?? "null");
-        ConsoleProDebug.Watch("Is Target Tag Attackable", isTargetTagAttackable.ToString());
-        ConsoleProDebug.Watch("Cooldown Over", isCooldownOver.ToString());
-        ConsoleProDebug.Watch("Can Attack", canAttack.ToString());
-
         return canAttack;
     }
 

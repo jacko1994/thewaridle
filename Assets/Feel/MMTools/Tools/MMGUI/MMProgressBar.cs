@@ -587,32 +587,42 @@ namespace MoreMountains.Tools
 		}
 
 
-		#endregion TESTS
+        #endregion TESTS
 
-		protected virtual void UpdateText()
-		{
-			_updatedText = TextPrefix + (BarTarget * TextValueMultiplier).ToString(TextFormat);
-			if (DisplayTotal)
-			{
-				_updatedText += TotalSeparator + (TextValueMultiplier).ToString(TextFormat);
-			}
-			_updatedText += TextSuffix;
-			if (_isPercentageTextNotNull)
-			{
-				PercentageText.text = _updatedText;
-			}
-			#if MM_TEXTMESHPRO
-			if (_isPercentageTextMeshProNotNull)
-			{
-				PercentageTextMeshPro.text = _updatedText;
-			}
-			#endif
-		}
-        
-		/// <summary>
-		/// On Update we update our bars
-		/// </summary>
-		protected virtual IEnumerator UpdateBarsCo()
+        protected virtual void UpdateText()
+        {
+            Debug.Log("TextPrefix: " + TextPrefix);
+            Debug.Log("BarTarget: " + BarTarget);
+            Debug.Log("TextValueMultiplier: " + TextValueMultiplier);
+
+            _updatedText = TextPrefix + (BarTarget * TextValueMultiplier).ToString(TextFormat);
+
+            if (DisplayTotal)
+            {
+                _updatedText += TotalSeparator + (TextValueMultiplier).ToString(TextFormat);
+            }
+
+            _updatedText += TextSuffix;
+
+            if (_isPercentageTextNotNull)
+            {
+                Debug.Log("Updated text: " + _updatedText);
+                PercentageText.text = _updatedText;
+            }
+
+#if MM_TEXTMESHPRO
+            if (_isPercentageTextMeshProNotNull)
+            {
+                PercentageTextMeshPro.text = _updatedText;
+            }
+#endif
+        }
+
+
+        /// <summary>
+        /// On Update we update our bars
+        /// </summary>
+        protected virtual IEnumerator UpdateBarsCo()
 		{
 			while (_coroutineShouldRun)
 			{

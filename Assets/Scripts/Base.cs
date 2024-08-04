@@ -4,9 +4,8 @@ public class Base : GameEntity
 {
     public int MaxHealth { get; private set; }
 
-    protected override void Start()
+    protected override void OnEnable()
     {
-        base.Start();
         IsMobile = false;
         MaxHealth = 1000;
         Health = MaxHealth;
@@ -15,7 +14,8 @@ public class Base : GameEntity
         AttackSpeed = 0f;
         AttackRange = 0f;
 
-        DamageBehavior = new StandardDamage(this, animatorController);
+        base.OnEnable();
+
     }
 
     public override void TakeDamage(int amount)

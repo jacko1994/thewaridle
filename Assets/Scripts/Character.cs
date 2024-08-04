@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Enemy : GameEntity
+public class Character : GameEntity
 {
-    public static List<string> DefaultEnemyAttackableTags = new List<string> { "Unit", "Base" };
+    public List<string> DefaultEnemyAttackableTags = new List<string> { "Unit", "Base" };
 
 
-    protected override void Start()
+    protected override void OnEnable()
     {
-        base.Start();
-
         Health = 50;
         AttackPower = 5;
         MovementSpeed = 3f;
@@ -17,9 +15,7 @@ public class Enemy : GameEntity
         AttackRange = 10f;
         IsMobile = true;
         AttackableTags = DefaultEnemyAttackableTags;
-        navMeshAgent.speed = MovementSpeed;
-        navMeshAgent.stoppingDistance = AttackRange;
-
+        base.OnEnable();
     }
 
 
@@ -27,7 +23,6 @@ public class Enemy : GameEntity
     {
         base.PerformActions();
 
-        // Chỉ tìm và tấn công kẻ thù gần nhất
         GameEntity target = FindNearestEnemy();
 
         if (target != null)
@@ -36,7 +31,6 @@ public class Enemy : GameEntity
 
             if (distance <= AttackRange)
             {
-                ConsoleProDebug.Watch("Enemy attack", distance.ToString());
                 Attack(target);
             }
             else if (IsMobile)

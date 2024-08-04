@@ -14,32 +14,36 @@ public abstract class GameEntity : MonoBehaviour
     protected AnimatorController animatorController;
     protected CharacterController characterController;
     protected CharacterFeedbackManager feedbackManager;
-    protected NavMeshAgent navMeshAgent; // Thay thế CharacterController bằng NavMeshAgent
+    protected NavMeshAgent navMeshAgent;
+    protected HealthBar healthUI;
+    protected ObjectPool objectPool;
 
     public IDamageable DamageBehavior { get; set; }
     public IAttackable AttackBehavior { get; set; }
     public IMovable MoveBehavior { get; set; }
 
-    // Thuộc tính chứa các tag có thể bị tấn công
     public List<string> AttackableTags { get; protected set; }
-    private float separationRadius = 1f;
 
-    protected virtual void Start()
+    protected virtual void OnEnable()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = MovementSpeed;
+        navMeshAgent.stoppingDistance = AttackRange;
         animatorController = GetComponent<AnimatorController>();
         characterController = GetComponent<CharacterController>();
         feedbackManager = GetComponent<CharacterFeedbackManager>();
         DamageBehavior = new StandardDamage(this, animatorController);
         AttackBehavior = new StandardAttack(this, animatorController, feedbackManager);
         MoveBehavior = new StandardMove(this, navMeshAgent, animatorController);
-
+        healthUI = GetComponentInChildren<HealthBar>();
+        if (healthUI != null)
+        {
+            healthUI.InitializeHealthBar(Health);
+        }
     }
 
     protected virtual void Update()
     {
-        //HandleSeparationFromSameTagEntities();
         PerformActions();
     }
 
@@ -55,63 +59,47 @@ public abstract class GameEntity : MonoBehaviour
 
     public virtual void ModifyHealth(int amount)
     {
+        int previousHealth = Health;
         Health = Mathf.Max(Health + amount, 0);
+
+        if (Health < previousHealth)
+        {
+            healthUI?.RemoveHealth(previousHealth - Health);
+        }
+        else if (Health > previousHealth)
+        {
+            healthUI?.AddHealth(Health - previousHealth);
+        }
+
         if (Health <= 0)
         {
             Die();
+            animatorController.Die();
         }
+    }
+    public void SetObjectPool(ObjectPool pool)
+    {
+        objectPool = pool;
     }
 
     protected virtual void Die()
     {
-        Destroy(gameObject);
-        Debug.Log($"{gameObject.name} has died.");
+        if (objectPool != null)
+        {
+            objectPool.ReturnToPool(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        Debug.Log($"{gameObject.name} has died and returned to pool.");
     }
 
     protected virtual void PerformActions()
     {
         if (!IsMobile) return;
     }
-
-    protected virtual void HandleSeparationFromSameTagEntities()
-    {
-        if (!IsMobile || navMeshAgent == null) return;
-
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, separationRadius);
-
-        ConsoleProDebug.Watch("Separation Check", $"Checking entities within radius {separationRadius}");
-
-        foreach (var hitCollider in hitColliders)
-        {
-            GameObject obj = hitCollider.gameObject;
-            if (obj == gameObject || obj.tag != gameObject.tag) continue;
-
-            float distance = Vector3.Distance(transform.position, obj.transform.position);
-
-            ConsoleProDebug.Watch("Detected Entity", obj.name);
-            ConsoleProDebug.Watch("Distance to Entity", distance.ToString());
-
-            if (distance < separationRadius)
-            {
-                Vector3 currentPosition = transform.position;
-                Vector3 direction = (transform.position - obj.transform.position).normalized;
-                Vector3 newPosition = transform.position + direction * (separationRadius - distance);
-
-                ConsoleProDebug.Watch("Current Position", currentPosition.ToString());
-
-                ConsoleProDebug.Watch("Moving Entity", $"Moving {gameObject.name} away from {obj.name}");
-                ConsoleProDebug.Watch("Separation Distance", (separationRadius - distance).ToString());
-
-                navMeshAgent.SetDestination(newPosition);
-
-                ConsoleProDebug.Watch("New Position", transform.position.ToString());
-            }
-        }
-    }
-
-
-
-
 
     public void LookAtTarget(Vector3 targetPosition)
     {
@@ -148,11 +136,11 @@ public abstract class GameEntity : MonoBehaviour
 
         return nearestEnemy;
     }
-
-    protected virtual void OnDrawGizmos()
+    private void UpdateHealthUI()
     {
-
-        Gizmos.color = Color.blue; 
-        Gizmos.DrawWireSphere(transform.position, separationRadius);
+        if (healthUI != null)
+        {
+            healthUI.UpdateHealthBar();
+        }
     }
 }

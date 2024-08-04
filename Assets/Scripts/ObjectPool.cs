@@ -1,10 +1,12 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public int initialPoolSize = 10;
+    public bool expandable = true; 
+    public int expansionAmount = 5;
     private List<GameObject> pool;
 
     void Awake()
@@ -28,14 +30,27 @@ public class ObjectPool : MonoBehaviour
             }
         }
 
-        GameObject newObj = Instantiate(enemyPrefab);
-        newObj.SetActive(false);
-        pool.Add(newObj);
-        return newObj;
+        if (expandable)
+        {
+            ExpandPool(expansionAmount);
+            return GetPooledObject();
+        }
+
+        return null;
     }
 
     public void ReturnToPool(GameObject obj)
     {
         obj.SetActive(false);
+    }
+
+    private void ExpandPool(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            GameObject obj = Instantiate(enemyPrefab);
+            obj.SetActive(false);
+            pool.Add(obj);
+        }
     }
 }

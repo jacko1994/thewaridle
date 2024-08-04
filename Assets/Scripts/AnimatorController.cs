@@ -114,9 +114,9 @@ public class AnimatorController : MonoBehaviour
 
     public void TakeDamage()
     {
-        if (animator != null)
-        {
-            animator.SetTrigger("TakeDamage");
-        }
+        //if (animator != null)
+        //{
+        //    animator.SetTrigger("TakeDamage");
+        //}
     }
 }
