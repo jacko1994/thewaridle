@@ -6,7 +6,8 @@ public class TheWarIdleManager : MonoBehaviour
     public List<StageConfig> stageConfigs;
     public ObjectPool objectPool; 
     private int currentStageIndex = 0;
-
+    public Spawner enemySpawner;
+    public Spawner unitSpawner;
     void Start()
     {
         InitializeStage(currentStageIndex);
@@ -47,7 +48,6 @@ public class TheWarIdleManager : MonoBehaviour
         }
         else
         {
-            // Nhân các giá trị lên 1.5 lần cho stage mới
             StageConfig lastConfig = stageConfigs[stageConfigs.Count - 1];
             int newNumberOfEnemies = Mathf.CeilToInt(lastConfig.numberOfEnemies * 1.5f);
             int newEnemyHP = Mathf.CeilToInt(lastConfig.enemyHP * 1.5f);
