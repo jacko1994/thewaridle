@@ -13,16 +13,21 @@ public class TheWarIdleManager : MonoBehaviour
     public int totalMoney = 0;
     private int currentCrowns = 0;
     private int currentStageIndex = 0;
-    private int currentEnemyCount = 0; // Đếm số lượng kẻ thù hiện tại
+    private int currentEnemyCount = 0;
+
     public Text totalCrownText;
     public Text currentStageText;
+    public Text currentMoneyText;
+
+    private int baseUnitPrice = 2;
+    private int currentUnitPrice;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Giữ lại đối tượng giữa các cảnh
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -32,8 +37,10 @@ public class TheWarIdleManager : MonoBehaviour
 
     void Start()
     {
+        currentUnitPrice = baseUnitPrice;
         LoadCrowns();
         UpdateCrownDisplay();
+        UpdateMoneyDisplay();
         InitializeStage(currentStageIndex);
     }
 
@@ -74,6 +81,7 @@ public class TheWarIdleManager : MonoBehaviour
         currentEnemyCount--;
         totalMoney += 1;
         Debug.Log("Enemy killed. Money earned: " + totalMoney + ", Current Enemy Count: " + currentEnemyCount);
+        UpdateMoneyDisplay();
 
         if (currentEnemyCount <= 0)
         {
@@ -81,6 +89,7 @@ public class TheWarIdleManager : MonoBehaviour
             NextStage();
         }
     }
+
     void NextStage()
     {
         currentStageIndex++;
@@ -134,6 +143,31 @@ public class TheWarIdleManager : MonoBehaviour
         if (currentStageText != null)
         {
             currentStageText.text = "Stage: " + (currentStageIndex + 1).ToString();
+        }
+    }
+
+    void UpdateMoneyDisplay()
+    {
+        if (currentMoneyText != null)
+        {
+            currentMoneyText.text = "Money: " + totalMoney.ToString();
+        }
+    }
+
+    public void BuyUnit()
+    {
+        if (totalMoney >= currentUnitPrice)
+        {
+            totalMoney -= currentUnitPrice;
+            currentUnitPrice = Mathf.CeilToInt(currentUnitPrice * 1.1f);
+            Debug.Log("Unit purchased. New unit price: " + currentUnitPrice + ", Money left: " + totalMoney);
+            UpdateMoneyDisplay();
+
+            unitSpawner.SpawnObjectManual();
+        }
+        else
+        {
+            Debug.Log("Not enough money to buy unit.");
         }
     }
 }

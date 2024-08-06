@@ -14,8 +14,8 @@ public class Unit : GameEntity
 
     protected override void OnEnable()
     {
-        base.OnEnable();
         ResetToBaseStats();
+        base.OnEnable();
     }
 
     public void ResetToBaseStats()
