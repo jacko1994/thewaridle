@@ -35750,9 +35750,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bb848b9b4c45164d914221d6289887f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultEnemyAttackableTags:
-  - Unit
-  - Base
 --- !u!114 &1826027061596941748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35848,6 +35845,18 @@ PrefabInstance:
     - target: {fileID: 1391802400351636220, guid: cf7d1845eaa592d4883cb02907f46a75, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -32
+      objectReference: {fileID: 0}
+    - target: {fileID: 1973176278027284964, guid: cf7d1845eaa592d4883cb02907f46a75, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1973176278027284964, guid: cf7d1845eaa592d4883cb02907f46a75, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1973176278027284964, guid: cf7d1845eaa592d4883cb02907f46a75, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1973176278027284964, guid: cf7d1845eaa592d4883cb02907f46a75, type: 3}
       propertyPath: m_FontData.m_MaxSize
