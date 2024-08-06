@@ -49,7 +49,10 @@ public class Spawner : MonoBehaviour
             SpawnObject();
         }
     }
-
+    public void ResetCurrentCount()
+    {
+        currentObjectCount = 0;
+    }
     private void SpawnObject()
     {
         Transform spawnPoint = GetUniqueSpawnPoint();
@@ -59,6 +62,7 @@ public class Spawner : MonoBehaviour
             obj.transform.position = spawnPoint.position;
             obj.SetActive(true);
             currentObjectCount++;
+            Debug.Log($"Spawned Object at {spawnPoint.position}. Current Object Count: {currentObjectCount}");
 
             GameEntity entity = obj.GetComponent<GameEntity>();
             if (entity != null)
@@ -82,7 +86,7 @@ public class Spawner : MonoBehaviour
 
     public void OnObjectDeactivation(GameObject obj)
     {
-        objectPool.ReturnToPool(obj); // Trả đối tượng về object pool
+        objectPool.ReturnToPool(obj);
         currentObjectCount--;
     }
 }

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
-
 public abstract class GameEntity : MonoBehaviour
 {
+
     public int Health { get; set; }
     public int AttackPower { get; set; }
     public float MovementSpeed { get; protected set; }

@@ -1,15 +1,39 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TheWarIdleManager : MonoBehaviour
 {
+    public static TheWarIdleManager Instance { get; private set; }
+
     public List<StageConfig> stageConfigs;
-    public ObjectPool objectPool; 
-    private int currentStageIndex = 0;
     public Spawner enemySpawner;
     public Spawner unitSpawner;
+    public Base playerBase;
+    public int totalMoney = 0;
+    private int currentCrowns = 0;
+    private int currentStageIndex = 0;
+    private int currentEnemyCount = 0; // Đếm số lượng kẻ thù hiện tại
+    public Text totalCrownText;
+    public Text currentStageText;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Giữ lại đối tượng giữa các cảnh
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
+        LoadCrowns();
+        UpdateCrownDisplay();
         InitializeStage(currentStageIndex);
     }
 
@@ -23,23 +47,41 @@ public class TheWarIdleManager : MonoBehaviour
 
         StageConfig config = stageConfigs[stageIndex];
 
-        for (int i = 0; i < config.numberOfEnemies; i++)
+        currentEnemyCount = config.numberOfEnemies;
+        Debug.Log($"Initializing Stage {stageIndex + 1} with {currentEnemyCount} enemies.");
+
+        if (currentStageIndex == 0)
         {
-            GameObject enemy = objectPool.GetPooledObject();
-            if (enemy != null)
-            {
-                enemy.SetActive(true);
-                Character enemyComponent = enemy.GetComponent<Character>();
-                if (enemyComponent != null)
-                {
-                    enemyComponent.Health = config.enemyHP;
-                    enemyComponent.AttackPower = config.enemyATK;
-                }
-            }
+            unitSpawner.SpawnObjectManual();
         }
+
+        enemySpawner.maxObjects = config.numberOfEnemies;
+        enemySpawner.ResetCurrentCount();
+        //enemySpawner.SpawnObjectManual();
+
+        foreach (var entity in FindObjectsOfType<Unit>())
+        {
+            entity.ResetToBaseStats();
+        }
+
+        playerBase.Repair(playerBase.MaxHealth);
+
+        UpdateStageDisplay();
     }
 
-    public void NextStage()
+    public void OnEnemyDeath()
+    {
+        currentEnemyCount--;
+        totalMoney += 1;
+        Debug.Log("Enemy killed. Money earned: " + totalMoney + ", Current Enemy Count: " + currentEnemyCount);
+
+        if (currentEnemyCount <= 0)
+        {
+            AwardCrowns(100);
+            NextStage();
+        }
+    }
+    void NextStage()
     {
         currentStageIndex++;
         if (currentStageIndex < stageConfigs.Count)
@@ -57,6 +99,41 @@ public class TheWarIdleManager : MonoBehaviour
             stageConfigs.Add(newConfig);
 
             InitializeStage(currentStageIndex);
+        }
+    }
+
+    void AwardCrowns(int amount)
+    {
+        currentCrowns += amount;
+        Debug.Log("Crowns earned: " + amount + ", Total Crowns: " + currentCrowns);
+        SaveCrowns();
+        UpdateCrownDisplay();
+    }
+
+    void SaveCrowns()
+    {
+        PlayerPrefs.SetInt("TotalCrowns", currentCrowns);
+        PlayerPrefs.Save();
+    }
+
+    void LoadCrowns()
+    {
+        currentCrowns = PlayerPrefs.GetInt("TotalCrowns", 0);
+    }
+
+    void UpdateCrownDisplay()
+    {
+        if (totalCrownText != null)
+        {
+            totalCrownText.text = "Crowns: " + currentCrowns.ToString();
+        }
+    }
+
+    void UpdateStageDisplay()
+    {
+        if (currentStageText != null)
+        {
+            currentStageText.text = "Stage: " + (currentStageIndex + 1).ToString();
         }
     }
 }
