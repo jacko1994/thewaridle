@@ -111,7 +111,10 @@ public class AnimatorController : MonoBehaviour
             animator.SetTrigger("Die");
         }
     }
-
+    public void TriggerDieEvent()
+    {
+        Debug.Log("Trigger Die Event");
+    }
     public void TakeDamage()
     {
         //if (animator != null)

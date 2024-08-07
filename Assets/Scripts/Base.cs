@@ -7,7 +7,7 @@ public class Base : GameEntity
     protected override void OnEnable()
     {
         IsMobile = false;
-        MaxHealth = 1000;
+        MaxHealth = 100;
         Health = MaxHealth;
         AttackPower = 0;
         MovementSpeed = 0f;
@@ -39,7 +39,8 @@ public class Base : GameEntity
     protected override void Die()
     {
         Debug.Log("Base Is Destroyed");
+        TheWarIdleManager.Instance.GameOver();
 
-        base.Die();
+        //base.Die();
     }
 }

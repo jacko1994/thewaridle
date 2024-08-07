@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 public class Enemy : GameEntity
 {
@@ -27,9 +28,11 @@ public class Enemy : GameEntity
     {
         base.PerformActions();
 
+        if (IsDie) return; // Không thực hiện hành động nếu đã chết
+
         GameEntity target = FindNearestEnemy();
 
-        if (target != null)
+        if (target != null && !target.IsDie) // Kiểm tra target có null hoặc đã chết
         {
             float distance = Vector3.Distance(transform.position, target.transform.position);
 
@@ -52,7 +55,7 @@ public class Enemy : GameEntity
 
         foreach (GameEntity entity in entities)
         {
-            if (DefaultEnemyAttackableTags.Contains(entity.tag))
+            if (!entity.IsDie && DefaultEnemyAttackableTags.Contains(entity.tag)) // Kiểm tra entity có chết hay không
             {
                 float distance = Vector3.Distance(transform.position, entity.transform.position);
 
@@ -66,4 +69,5 @@ public class Enemy : GameEntity
 
         return nearestEnemy;
     }
+
 }

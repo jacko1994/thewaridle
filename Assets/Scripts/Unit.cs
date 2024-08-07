@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,19 +20,55 @@ public class Unit : GameEntity
 
     public void ResetToBaseStats()
     {
-        Health = baseHealth;
-        AttackPower = baseAttackPower;
-        MovementSpeed = baseMovementSpeed;
-        AttackSpeed = baseAttackSpeed;
-        AttackRange = baseAttackRange;
+        // Lấy giá trị từ UpgradeManager thay cho giá trị base
+        Health = UpgradeManager.UnitHP;
+        Debug.Log("Reset " + Health + " base health: " + UpgradeManager.UnitHP);
+
+        AttackPower = UpgradeManager.UnitATK;
+        MovementSpeed = UpgradeManager.UnitMovementSpeed;
+        AttackSpeed = UpgradeManager.UnitAttackSpeed;
+        AttackRange = UpgradeManager.UnitAttackRange;
         IsMobile = true;
         AttackableTags = DefaultEnemyAttackableTags;
 
         if (navMeshAgent != null)
         {
             navMeshAgent.speed = MovementSpeed;
-            navMeshAgent.stoppingDistance = AttackRange;
         }
+    }
+
+    public void UpgradeHealth(int increment)
+    {
+        UpgradeManager.UnitHP += increment;
+        Health += increment;
+    }
+
+    public void UpgradeAttackPower(int increment)
+    {
+        UpgradeManager.UnitATK += increment;
+        AttackPower += increment;
+    }
+
+    public void UpgradeMovementSpeed(float increment)
+    {
+        UpgradeManager.UnitMovementSpeed += increment;
+        MovementSpeed += increment;
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.speed = MovementSpeed;
+        }
+    }
+
+    public void UpgradeAttackSpeed(float increment)
+    {
+        UpgradeManager.UnitAttackSpeed += increment;
+        AttackSpeed += increment;
+    }
+
+    public void UpgradeAttackRange(float increment)
+    {
+        UpgradeManager.UnitAttackRange += increment;
+        AttackRange = increment;
     }
 
     protected override void PerformActions()

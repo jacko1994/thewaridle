@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
+using System.Collections;
+
 public abstract class GameEntity : MonoBehaviour
 {
-
     public int Health { get; set; }
     public int AttackPower { get; set; }
     public float MovementSpeed { get; protected set; }
     public float AttackSpeed { get; protected set; }
     public float AttackRange { get; protected set; }
     public bool IsMobile { get; protected set; } = true;
+    public bool IsDie { get; private set; } = false; // Biến để kiểm tra trạng thái chết
 
     protected AnimatorController animatorController;
     protected CharacterController characterController;
@@ -27,6 +29,7 @@ public abstract class GameEntity : MonoBehaviour
     protected virtual void OnEnable()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.enabled = true;
         navMeshAgent.speed = MovementSpeed;
         navMeshAgent.stoppingDistance = AttackRange;
         animatorController = GetComponent<AnimatorController>();
@@ -40,25 +43,35 @@ public abstract class GameEntity : MonoBehaviour
         {
             healthUI.InitializeHealthBar(Health);
         }
+        IsDie = false;
     }
 
     protected virtual void Update()
     {
-        PerformActions();
+        if (!IsDie)
+        {
+            PerformActions();
+        }
     }
 
     public virtual void TakeDamage(int amount)
     {
+        if (IsDie) return; // Không nhận sát thương nếu đã chết
+
         DamageBehavior?.TakeDamage(amount);
     }
 
     public virtual void Attack(GameEntity target)
     {
+        if (IsDie) return; // Không tấn công nếu đã chết
+
         AttackBehavior?.Attack(target);
     }
 
     public virtual void ModifyHealth(int amount)
     {
+        if (IsDie) return; // Không thay đổi máu nếu đã chết
+
         int previousHealth = Health;
         Health = Mathf.Max(Health + amount, 0);
 
@@ -71,19 +84,41 @@ public abstract class GameEntity : MonoBehaviour
             healthUI?.AddHealth(Health - previousHealth);
         }
 
-        if (Health <= 0)
+        if (Health <= 0 && !IsDie)
         {
-            Die();
             animatorController.Die();
+            //OnDeath();
         }
     }
+
     public void SetObjectPool(ObjectPool pool)
     {
         objectPool = pool;
     }
 
+    protected virtual void OnDeath()
+    {
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.enabled = false;
+        }
+
+        IsMobile = false;
+        IsDie = true;
+
+        StartCoroutine(DelayedDie(1.0f));
+    }
+
+    private IEnumerator DelayedDie(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Die();
+    }
+
     protected virtual void Die()
     {
+        IsDie = true;
+
         if (objectPool != null)
         {
             objectPool.ReturnToPool(gameObject);
@@ -98,11 +133,13 @@ public abstract class GameEntity : MonoBehaviour
 
     protected virtual void PerformActions()
     {
-        if (!IsMobile) return;
+        if (!IsMobile || IsDie) return; 
     }
 
     public void LookAtTarget(Vector3 targetPosition)
     {
+        if (IsDie) return;
+
         Vector3 direction = (targetPosition - transform.position).normalized;
         direction.y = 0;
         transform.forward = direction;
@@ -110,12 +147,15 @@ public abstract class GameEntity : MonoBehaviour
 
     protected void LookAtTarget(GameEntity target)
     {
-        if (target == null) return;
+        if (IsDie || target == null) return;
+
         LookAtTarget(target.transform.position);
     }
 
     protected virtual GameEntity FindNearestEnemy()
     {
+        if (IsDie) return null;
+
         GameObject[] potentialTargets = FindObjectsOfType<GameObject>();
         GameEntity nearestEnemy = null;
         float nearestDistance = Mathf.Infinity;
@@ -136,6 +176,7 @@ public abstract class GameEntity : MonoBehaviour
 
         return nearestEnemy;
     }
+
     private void UpdateHealthUI()
     {
         if (healthUI != null)

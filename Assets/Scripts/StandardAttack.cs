@@ -22,25 +22,19 @@ public class StandardAttack : IAttackable
             gameEntity.LookAtTarget(target.transform.position);
             target.TakeDamage(gameEntity.AttackPower);
             lastAttackTime = Time.time;
-            //animatorController?.Shoot();
             characterFeedbackManager.PlayAttackFeedback();
         }
     }
 
     public bool CanAttack(GameEntity target)
     {
-        // Lấy tag của mục tiêu
-        string targetTag = target?.tag;
+        if (target == null || target.IsDie) return false;
 
-        // Kiểm tra xem tag của mục tiêu có nằm trong danh sách AttackableTags không
+        string targetTag = target.tag;
         bool isTargetTagAttackable = gameEntity.AttackableTags.Contains(targetTag);
-
-        // Kiểm tra xem thời gian chờ giữa các lần tấn công đã hết chưa
         bool isCooldownOver = Time.time - lastAttackTime > 1f / gameEntity.AttackSpeed;
 
-        // Điều kiện cuối cùng để có thể tấn công
-        bool canAttack = target != null && isTargetTagAttackable && isCooldownOver;
-        return canAttack;
+        return isTargetTagAttackable && isCooldownOver;
     }
 
 

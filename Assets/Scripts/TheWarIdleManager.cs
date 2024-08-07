@@ -21,6 +21,21 @@ public class TheWarIdleManager : MonoBehaviour
 
     private int baseUnitPrice = 2;
     private int currentUnitPrice;
+    private float priceModifier = 1;
+
+    private int healthUpgradeCost;
+    private int attackPowerUpgradeCost;
+    private int movementSpeedUpgradeCost;
+    private int attackSpeedUpgradeCost;
+    private int attackRangeUpgradeCost;
+    private int baseUpgradeCost = 50;
+    public Text healthUpgradeCostText;
+    public Text attackPowerUpgradeCostText;
+    public Text movementSpeedUpgradeCostText;
+    public Text attackSpeedUpgradeCostText;
+    public Text attackRangeUpgradeCostText;
+    [Header("UI")]
+    public GameObject resultScreen;
 
     private void Awake()
     {
@@ -33,12 +48,15 @@ public class TheWarIdleManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        LoadCrowns();
+
     }
 
-    void Start()
+
+    public void StartGame()
     {
         currentUnitPrice = baseUnitPrice;
-        LoadCrowns();
         UpdateCrownDisplay();
         UpdateMoneyDisplay();
         InitializeStage(currentStageIndex);
@@ -64,7 +82,9 @@ public class TheWarIdleManager : MonoBehaviour
 
         enemySpawner.maxObjects = config.numberOfEnemies;
         enemySpawner.ResetCurrentCount();
-        //enemySpawner.SpawnObjectManual();
+        enemySpawner.spawnMode = Spawner.SpawnMode.Auto;
+        // Không gọi SpawnObjectManual ở đây nữa
+        // enemySpawner.SpawnObjectManual();
 
         foreach (var entity in FindObjectsOfType<Unit>())
         {
@@ -159,7 +179,7 @@ public class TheWarIdleManager : MonoBehaviour
         if (totalMoney >= currentUnitPrice)
         {
             totalMoney -= currentUnitPrice;
-            currentUnitPrice = Mathf.CeilToInt(currentUnitPrice * 1.1f);
+            currentUnitPrice = Mathf.CeilToInt(currentUnitPrice * priceModifier);
             Debug.Log("Unit purchased. New unit price: " + currentUnitPrice + ", Money left: " + totalMoney);
             UpdateMoneyDisplay();
 
@@ -169,5 +189,150 @@ public class TheWarIdleManager : MonoBehaviour
         {
             Debug.Log("Not enough money to buy unit.");
         }
+    }
+    void InitializeUpgradeCosts()
+    {
+        healthUpgradeCost = baseUpgradeCost;
+        attackPowerUpgradeCost = baseUpgradeCost;
+        movementSpeedUpgradeCost = baseUpgradeCost;
+        attackSpeedUpgradeCost = baseUpgradeCost;
+        attackRangeUpgradeCost = baseUpgradeCost;
+
+        UpdateUpgradeCostTexts();
+    }
+
+    void UpdateUpgradeCostTexts()
+    {
+        healthUpgradeCostText.text = "x" + healthUpgradeCost;
+        attackPowerUpgradeCostText.text = "x" + attackPowerUpgradeCost;
+        movementSpeedUpgradeCostText.text = "x" + movementSpeedUpgradeCost;
+        attackSpeedUpgradeCostText.text = "x" + attackSpeedUpgradeCost;
+        attackRangeUpgradeCostText.text = "x" + attackRangeUpgradeCost;
+    }
+
+    public void UpgradeHealth()
+    {
+        if (currentCrowns >= healthUpgradeCost)
+        {
+            currentCrowns -= healthUpgradeCost;
+            healthUpgradeCost = Mathf.CeilToInt(healthUpgradeCost * 1.1f);
+            UpdateCrownDisplay();
+            UpdateUpgradeCostTexts();
+
+            foreach (var unit in FindObjectsOfType<Unit>())
+            {
+                unit.UpgradeHealth(1);
+            }
+        }
+        else
+        {
+            Debug.Log("Not enough crowns to upgrade health.");
+        }
+    }
+
+    public void UpgradeAttackPower()
+    {
+        if (currentCrowns >= attackPowerUpgradeCost)
+        {
+            currentCrowns -= attackPowerUpgradeCost;
+            attackPowerUpgradeCost = Mathf.CeilToInt(attackPowerUpgradeCost * 1.1f);
+            UpdateCrownDisplay();
+            UpdateUpgradeCostTexts();
+
+            foreach (var unit in FindObjectsOfType<Unit>())
+            {
+                unit.UpgradeAttackPower(1);
+            }
+        }
+        else
+        {
+            Debug.Log("Not enough crowns to upgrade attack power.");
+        }
+    }
+
+    public void UpgradeMovementSpeed()
+    {
+        if (currentCrowns >= movementSpeedUpgradeCost)
+        {
+            currentCrowns -= movementSpeedUpgradeCost;
+            movementSpeedUpgradeCost = Mathf.CeilToInt(movementSpeedUpgradeCost * 1.1f);
+            UpdateCrownDisplay();
+            UpdateUpgradeCostTexts();
+
+            foreach (var unit in FindObjectsOfType<Unit>())
+            {
+                unit.UpgradeMovementSpeed(1);
+            }
+        }
+        else
+        {
+            Debug.Log("Not enough crowns to upgrade movement speed.");
+        }
+    }
+
+    public void UpgradeAttackSpeed()
+    {
+        if (currentCrowns >= attackSpeedUpgradeCost)
+        {
+            currentCrowns -= attackSpeedUpgradeCost;
+            attackSpeedUpgradeCost = Mathf.CeilToInt(attackSpeedUpgradeCost * 1.1f);
+            UpdateCrownDisplay();
+            UpdateUpgradeCostTexts();
+
+            foreach (var unit in FindObjectsOfType<Unit>())
+            {
+                unit.UpgradeAttackSpeed(1);
+            }
+        }
+        else
+        {
+            Debug.Log("Not enough crowns to upgrade attack speed.");
+        }
+    }
+
+    public void UpgradeAttackRange()
+    {
+        if (currentCrowns >= attackRangeUpgradeCost)
+        {
+            currentCrowns -= attackRangeUpgradeCost;
+            attackRangeUpgradeCost = Mathf.CeilToInt(attackRangeUpgradeCost * 1.1f);
+            UpdateCrownDisplay();
+            UpdateUpgradeCostTexts();
+
+            foreach (var unit in FindObjectsOfType<Unit>())
+            {
+                unit.UpgradeAttackRange(1);
+            }
+        }
+        else
+        {
+            Debug.Log("Not enough crowns to upgrade attack range.");
+        }
+    }
+
+    public bool SpendCrowns(int amount)
+    {
+        if (currentCrowns >= amount)
+        {
+            currentCrowns -= amount;
+            UpdateCrownDisplay(); // Cập nhật lại hiển thị số Crown
+            SaveCrowns(); // Lưu lại số Crown mới
+            return true;
+        }
+        else
+        {
+            Debug.Log("Not enough crowns.");
+            return false;
+        }
+    }
+    public int GetCurrentCrowns()
+    {
+        return currentCrowns;
+    }
+    public void GameOver()
+    {
+        Debug.Log("Game Over!");
+        UIPopupManager.Instance.ShowPanel(1);
+       
     }
 }
