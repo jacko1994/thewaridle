@@ -11,14 +11,12 @@ public class TheWarIdleManager : MonoBehaviour
     public Spawner enemySpawner;
     public Spawner unitSpawner;
     public Base playerBase;
-    public int totalMoney = 0;
     private int currentCrowns = 0;
     private int currentStageIndex = 0;
     private int currentEnemyCount = 0;
 
     public TextMeshProUGUI totalCrownText;
     public TextMeshProUGUI currentStageText;
-    public Text currentMoneyText;
 
     public Slider enemyProgressSlider;
     public TextMeshProUGUI enemyProgressText;
@@ -46,7 +44,6 @@ public class TheWarIdleManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -61,7 +58,6 @@ public class TheWarIdleManager : MonoBehaviour
     {
         currentUnitPrice = baseUnitPrice;
         UpdateCrownDisplay();
-        UpdateMoneyDisplay();
         InitializeStage(currentStageIndex);
     }
 
@@ -101,9 +97,8 @@ public class TheWarIdleManager : MonoBehaviour
     public void OnEnemyDeath()
     {
         currentEnemyCount--;
-        totalMoney += 1;
-        Debug.Log("Enemy killed. Money earned: " + totalMoney + ", Current Enemy Count: " + currentEnemyCount);
-        UpdateMoneyDisplay();
+        currentCrowns += 1;
+        Debug.Log("Enemy killed. Money earned: " + currentCrowns + ", Current Enemy Count: " + currentEnemyCount);
         UpdateEnemyProgressDisplay();
 
         if (currentEnemyCount <= 0)
@@ -169,14 +164,6 @@ public class TheWarIdleManager : MonoBehaviour
         }
     }
 
-    void UpdateMoneyDisplay()
-    {
-        if (currentMoneyText != null)
-        {
-            currentMoneyText.text = "Money: " + totalMoney.ToString();
-        }
-    }
-
     void UpdateEnemyProgressDisplay()
     {
         int enemiesKilled = stageConfigs[currentStageIndex].numberOfEnemies - currentEnemyCount;
@@ -187,14 +174,13 @@ public class TheWarIdleManager : MonoBehaviour
 
     public void BuyUnit()
     {
-        if (totalMoney >= currentUnitPrice)
+        if (currentCrowns >= currentUnitPrice)
         {
-            totalMoney -= currentUnitPrice;
+            currentCrowns -= currentUnitPrice;
             currentUnitPrice = Mathf.CeilToInt(currentUnitPrice * priceModifier);
-            Debug.Log("Unit purchased. New unit price: " + currentUnitPrice + ", Money left: " + totalMoney);
-            UpdateMoneyDisplay();
-
+            Debug.Log("Unit purchased. New unit price: " + currentUnitPrice + ", Money left: " + currentCrowns);
             unitSpawner.SpawnObjectManual();
+            UpdateCrownDisplay();
         }
         else
         {

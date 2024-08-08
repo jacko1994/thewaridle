@@ -27,11 +27,11 @@ public class Enemy : GameEntity
     {
         base.PerformActions();
 
-        if (IsDie) return; // Không thực hiện hành động nếu đã chết
+        if (IsDie) return; 
 
         GameEntity target = FindNearestEnemy();
 
-        if (target != null && !target.IsDie) // Kiểm tra target có null hoặc đã chết
+        if (target != null && !target.IsDie) 
         {
             float distance = Vector3.Distance(transform.position, target.transform.position);
 
@@ -54,7 +54,7 @@ public class Enemy : GameEntity
 
         foreach (GameEntity entity in entities)
         {
-            if (!entity.IsDie && DefaultEnemyAttackableTags.Contains(entity.tag)) // Kiểm tra entity có chết hay không
+            if (!entity.IsDie && DefaultEnemyAttackableTags.Contains(entity.tag))
             {
                 float distance = Vector3.Distance(transform.position, entity.transform.position);
 

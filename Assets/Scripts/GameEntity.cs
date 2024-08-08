@@ -106,7 +106,7 @@ public abstract class GameEntity : MonoBehaviour
         IsMobile = false;
         IsDie = true;
 
-        StartCoroutine(DelayedDie(1.0f));
+        StartCoroutine(DelayedDie(2f));
     }
 
     private IEnumerator DelayedDie(float delay)
