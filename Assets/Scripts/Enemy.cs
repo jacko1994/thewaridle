@@ -17,13 +17,12 @@ public class Enemy : GameEntity
         AttackableTags = DefaultEnemyAttackableTags;
         base.OnEnable();
     }
-
-    protected override void Die()
+    protected override void OnDeath()
     {
         TheWarIdleManager.Instance?.OnEnemyDeath();
-        base.Die();
-    }
 
+        base.OnDeath();
+    }
     protected override void PerformActions()
     {
         base.PerformActions();

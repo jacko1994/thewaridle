@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,9 +16,12 @@ public class TheWarIdleManager : MonoBehaviour
     private int currentStageIndex = 0;
     private int currentEnemyCount = 0;
 
-    public Text totalCrownText;
-    public Text currentStageText;
+    public TextMeshProUGUI totalCrownText;
+    public TextMeshProUGUI currentStageText;
     public Text currentMoneyText;
+
+    public Slider enemyProgressSlider;
+    public TextMeshProUGUI enemyProgressText;
 
     private int baseUnitPrice = 2;
     private int currentUnitPrice;
@@ -53,7 +57,6 @@ public class TheWarIdleManager : MonoBehaviour
 
     }
 
-
     public void StartGame()
     {
         currentUnitPrice = baseUnitPrice;
@@ -83,8 +86,6 @@ public class TheWarIdleManager : MonoBehaviour
         enemySpawner.maxObjects = config.numberOfEnemies;
         enemySpawner.ResetCurrentCount();
         enemySpawner.spawnMode = Spawner.SpawnMode.Auto;
-        // Không gọi SpawnObjectManual ở đây nữa
-        // enemySpawner.SpawnObjectManual();
 
         foreach (var entity in FindObjectsOfType<Unit>())
         {
@@ -94,6 +95,7 @@ public class TheWarIdleManager : MonoBehaviour
         playerBase.Repair(playerBase.MaxHealth);
 
         UpdateStageDisplay();
+        UpdateEnemyProgressDisplay();
     }
 
     public void OnEnemyDeath()
@@ -102,6 +104,7 @@ public class TheWarIdleManager : MonoBehaviour
         totalMoney += 1;
         Debug.Log("Enemy killed. Money earned: " + totalMoney + ", Current Enemy Count: " + currentEnemyCount);
         UpdateMoneyDisplay();
+        UpdateEnemyProgressDisplay();
 
         if (currentEnemyCount <= 0)
         {
@@ -162,7 +165,7 @@ public class TheWarIdleManager : MonoBehaviour
     {
         if (currentStageText != null)
         {
-            currentStageText.text = "Stage: " + (currentStageIndex + 1).ToString();
+            currentStageText.SetText("Stage: " + (currentStageIndex + 1).ToString());
         }
     }
 
@@ -172,6 +175,14 @@ public class TheWarIdleManager : MonoBehaviour
         {
             currentMoneyText.text = "Money: " + totalMoney.ToString();
         }
+    }
+
+    void UpdateEnemyProgressDisplay()
+    {
+        int enemiesKilled = stageConfigs[currentStageIndex].numberOfEnemies - currentEnemyCount;
+        enemyProgressSlider.maxValue = stageConfigs[currentStageIndex].numberOfEnemies;
+        enemyProgressSlider.value = enemiesKilled;
+        enemyProgressText.text = $"{enemiesKilled}/{stageConfigs[currentStageIndex].numberOfEnemies}";
     }
 
     public void BuyUnit()
@@ -190,6 +201,7 @@ public class TheWarIdleManager : MonoBehaviour
             Debug.Log("Not enough money to buy unit.");
         }
     }
+
     void InitializeUpgradeCosts()
     {
         healthUpgradeCost = baseUpgradeCost;
@@ -329,10 +341,11 @@ public class TheWarIdleManager : MonoBehaviour
     {
         return currentCrowns;
     }
+
     public void GameOver()
     {
         Debug.Log("Game Over!");
         UIPopupManager.Instance.ShowPanel(1);
-       
+
     }
 }

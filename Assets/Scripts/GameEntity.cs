@@ -87,7 +87,7 @@ public abstract class GameEntity : MonoBehaviour
         if (Health <= 0 && !IsDie)
         {
             animatorController.Die();
-            //OnDeath();
+            OnDeath();
         }
     }
 
