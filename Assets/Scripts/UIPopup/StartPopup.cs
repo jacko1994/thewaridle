@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +16,7 @@ public class StartPopup : MonoBehaviour
 {
     public Button startButton;
     [SerializeField] private List<UpgradeButton> upgradeButtons;
-    public Text crownText;
+    public TextMeshProUGUI crownText;
 
     private UpgradeInfo hpUpgradeInfo;
     private UpgradeInfo atkUpgradeInfo;
@@ -60,7 +61,7 @@ public class StartPopup : MonoBehaviour
 
     private void UpdateCrownDisplay()
     {
-        crownText.text = "Crowns: " + TheWarIdleManager.Instance.GetCurrentCrowns().ToString();
+        crownText.text = "" + TheWarIdleManager.Instance.GetCurrentCrowns().ToString();
     }
 
     private void UpdateUpgradeTexts()

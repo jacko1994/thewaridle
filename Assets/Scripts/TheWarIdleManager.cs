@@ -157,7 +157,7 @@ public class TheWarIdleManager : MonoBehaviour
     {
         if (totalCrownText != null)
         {
-            totalCrownText.text = "Crowns: " + currentCrowns.ToString();
+            totalCrownText.text = "" + currentCrowns.ToString();
         }
     }
 
