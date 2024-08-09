@@ -21,9 +21,13 @@ public class TheWarIdleManager : MonoBehaviour
     public Slider enemyProgressSlider;
     public TextMeshProUGUI enemyProgressText;
 
+    [Header("Unit Purchase")]
+    public Button unitButton;           // Nút mua Unit
+    public TextMeshProUGUI unitPriceText; // Text hiển thị giá trên nút Unit
+
     private int baseUnitPrice = 2;
     private int currentUnitPrice;
-    private float priceModifier = 1;
+    private float priceModifier = 1.01f;
 
     private int healthUpgradeCost;
     private int attackPowerUpgradeCost;
@@ -55,13 +59,13 @@ public class TheWarIdleManager : MonoBehaviour
 
         LoadCrowns();
         LoadTutorialState();
-
     }
 
     public void StartGame()
     {
         currentUnitPrice = baseUnitPrice;
         UpdateCrownDisplay();
+        UpdateUnitPriceDisplay(); // Cập nhật hiển thị giá unit
 
         if (!hasSeenTutorial)
         {
@@ -86,6 +90,7 @@ public class TheWarIdleManager : MonoBehaviour
         hasSeenTutorial = true;
         SaveTutorialState(); // Lưu trạng thái đã xem hướng dẫn
     }
+
     void InitializeStage(int stageIndex)
     {
         if (stageIndex < 0 || stageIndex >= stageConfigs.Count)
@@ -215,6 +220,7 @@ public class TheWarIdleManager : MonoBehaviour
                 Debug.Log("Unit purchased. New unit price: " + currentUnitPrice + ", Money left: " + currentCrowns);
                 unitSpawner.SpawnObjectManual();
                 UpdateCrownDisplay();
+                UpdateUnitPriceDisplay(); // Cập nhật hiển thị giá unit
             }
             else
             {
@@ -223,7 +229,13 @@ public class TheWarIdleManager : MonoBehaviour
         }
     }
 
-
+    void UpdateUnitPriceDisplay()
+    {
+        if (unitPriceText != null)
+        {
+            unitPriceText.text = "" + currentUnitPrice.ToString();
+        }
+    }
 
     void InitializeUpgradeCosts()
     {
