@@ -36,8 +36,11 @@ public class TheWarIdleManager : MonoBehaviour
     public Text movementSpeedUpgradeCostText;
     public Text attackSpeedUpgradeCostText;
     public Text attackRangeUpgradeCostText;
-    [Header("UI")]
-    public GameObject resultScreen;
+
+    [Header("Tutorial Elements")]
+    public GameObject tutorialHand;
+    public GameObject tutorialTextBox;
+    private bool hasSeenTutorial = false;
 
     private void Awake()
     {
@@ -51,6 +54,7 @@ public class TheWarIdleManager : MonoBehaviour
         }
 
         LoadCrowns();
+        LoadTutorialState();
 
     }
 
@@ -58,9 +62,30 @@ public class TheWarIdleManager : MonoBehaviour
     {
         currentUnitPrice = baseUnitPrice;
         UpdateCrownDisplay();
-        InitializeStage(currentStageIndex);
+
+        if (!hasSeenTutorial)
+        {
+            ShowTutorial();
+        }
+        else
+        {
+            InitializeStage(currentStageIndex); // Chỉ khởi tạo màn chơi nếu đã xem tutorial
+        }
     }
 
+    private void ShowTutorial()
+    {
+        tutorialHand.SetActive(true);
+        tutorialTextBox.SetActive(true);
+    }
+
+    private void HideTutorial()
+    {
+        tutorialHand.SetActive(false);
+        tutorialTextBox.SetActive(false);
+        hasSeenTutorial = true;
+        SaveTutorialState(); // Lưu trạng thái đã xem hướng dẫn
+    }
     void InitializeStage(int stageIndex)
     {
         if (stageIndex < 0 || stageIndex >= stageConfigs.Count)
@@ -174,19 +199,31 @@ public class TheWarIdleManager : MonoBehaviour
 
     public void BuyUnit()
     {
-        if (currentCrowns >= currentUnitPrice)
+        if (!hasSeenTutorial)
         {
-            currentCrowns -= currentUnitPrice;
-            currentUnitPrice = Mathf.CeilToInt(currentUnitPrice * priceModifier);
-            Debug.Log("Unit purchased. New unit price: " + currentUnitPrice + ", Money left: " + currentCrowns);
-            unitSpawner.SpawnObjectManual();
             UpdateCrownDisplay();
+
+            HideTutorial();
+            InitializeStage(currentStageIndex);
         }
         else
         {
-            Debug.Log("Not enough money to buy unit.");
+            if (currentCrowns >= currentUnitPrice)
+            {
+                currentCrowns -= currentUnitPrice;
+                currentUnitPrice = Mathf.CeilToInt(currentUnitPrice * priceModifier);
+                Debug.Log("Unit purchased. New unit price: " + currentUnitPrice + ", Money left: " + currentCrowns);
+                unitSpawner.SpawnObjectManual();
+                UpdateCrownDisplay();
+            }
+            else
+            {
+                Debug.Log("Not enough money to buy unit.");
+            }
         }
     }
+
+
 
     void InitializeUpgradeCosts()
     {
@@ -334,4 +371,15 @@ public class TheWarIdleManager : MonoBehaviour
         UIPopupManager.Instance.ShowPanel(1);
 
     }
+    private void SaveTutorialState()
+    {
+        PlayerPrefs.SetInt("HasSeenTutorial", hasSeenTutorial ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    private void LoadTutorialState()
+    {
+        hasSeenTutorial = PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1;
+    }
+
 }
