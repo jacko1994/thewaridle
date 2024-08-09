@@ -157,6 +157,7 @@ public abstract class GameEntity : MonoBehaviour
         if (navMeshAgent != null)
         {
             navMeshAgent.isStopped = true;
+            animatorController.SetBool("IsMove", false);
         }
     }
 
@@ -165,6 +166,7 @@ public abstract class GameEntity : MonoBehaviour
         if (navMeshAgent != null)
         {
             navMeshAgent.isStopped = false;
+            animatorController.SetBool("IsMove", true);
         }
     }
 

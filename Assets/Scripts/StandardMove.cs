@@ -23,7 +23,10 @@ public class StandardMove : IMovable
 
         //gameEntity.LookAtTarget(targetPosition);
 
+        if (navMeshAgent.isStopped) return;
+
         navMeshAgent.SetDestination(targetPosition);
+
 
         if (navMeshAgent.remainingDistance > stoppingDistance)
         {
