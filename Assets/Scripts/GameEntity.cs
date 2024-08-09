@@ -133,7 +133,7 @@ public abstract class GameEntity : MonoBehaviour
 
     protected virtual void PerformActions()
     {
-        if (!IsMobile || IsDie) return; 
+        if (!IsMobile || IsDie) return;
     }
 
     public void LookAtTarget(Vector3 targetPosition)
@@ -150,6 +150,22 @@ public abstract class GameEntity : MonoBehaviour
         if (IsDie || target == null) return;
 
         LookAtTarget(target.transform.position);
+    }
+
+    public void DisableMovement()
+    {
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.isStopped = true;
+        }
+    }
+
+    public void EnableMovement()
+    {
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.isStopped = false;
+        }
     }
 
     protected virtual GameEntity FindNearestEnemy()

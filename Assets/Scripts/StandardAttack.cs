@@ -20,9 +20,19 @@ public class StandardAttack : IAttackable
         if (CanAttack(target))
         {
             gameEntity.LookAtTarget(target.transform.position);
+
+            // Vô hiệu hóa navMeshAgent khi bắt đầu tấn công
+            gameEntity.DisableMovement();
+
+            // Gây sát thương cho mục tiêu
             target.TakeDamage(gameEntity.AttackPower);
+
             lastAttackTime = Time.time;
             characterFeedbackManager.PlayAttackFeedback();
+
+            // Kích hoạt lại navMeshAgent sau một khoảng thời gian (thời gian hồi chiêu)
+            float attackCooldown = 1f / gameEntity.AttackSpeed;
+            gameEntity.Invoke(nameof(gameEntity.EnableMovement), attackCooldown);
         }
     }
 
@@ -36,7 +46,4 @@ public class StandardAttack : IAttackable
 
         return isTargetTagAttackable && isCooldownOver;
     }
-
-
-
 }
